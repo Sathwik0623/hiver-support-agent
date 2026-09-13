@@ -520,6 +520,14 @@ ACCOUNT_COMPROMISE_TERMS = (
     "someone logged in",
     "unauthorized access",
     "unauthorised access",
+    "hacked",
+    "hack",
+    "compromised",
+    "someone accessed my account",
+    "someone accessed my apple account",
+    "unauthorized access",
+    "unauthorized access to my account",
+    "someone got into my account",
 )
 
 FRAUD_TERMS = (

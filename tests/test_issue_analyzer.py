@@ -92,3 +92,111 @@ def test_data_loss_issue():
     assert result.entities.issue_details["data_loss"] == (
         "customer_reported"
     )
+
+def test_battery_details():
+    case = make_case("My iPhone battery is draining very quickly")
+
+    result = analyze_case(case)
+
+    assert result.entities.issue_details["symptom"] == (
+        "battery_or_charging_issue"
+    )
+    assert result.entities.issue_details["battery"] == (
+        "customer_reported"
+    )
+
+def test_charging_issue():
+    case = make_case("My iPhone is not charging")
+
+    result = analyze_case(case)
+
+    assert result.entities.issue_details["symptom"] == (
+        "battery_or_charging_issue"
+    )
+    assert result.entities.issue_details["charging"] == (
+        "customer_reported"
+    )
+
+def test_connectivity_issue():
+    case = make_case("My iPhone cannot connect to Wi-Fi")
+
+    result = analyze_case(case)
+
+    assert result.entities.issue_details["symptom"] == (
+        "connectivity_issue"
+    )
+
+def test_hardware_issue():
+    case = make_case("My iPhone camera is physically damaged")
+
+    result = analyze_case(case)
+
+    assert result.entities.issue_details["symptom"] == (
+        "hardware_issue"
+    )
+
+def test_input_display_issue():
+    case = make_case("My iPhone touchscreen is not responding")
+
+    result = analyze_case(case)
+
+    assert result.entities.issue_details["symptom"] == (
+        "input_or_display_issue"
+    )
+
+def test_backup_restore_issue():
+    case = make_case("I cannot restore my iPhone from an iCloud backup")
+
+    result = analyze_case(case)
+
+    assert result.entities.issue_details["symptom"] == (
+        "backup_or_restore_issue"
+    )
+
+
+def test_security_issue():
+    case = make_case("I think someone accessed my Apple Account")
+
+    result = analyze_case(case)
+
+    assert result.entities.issue_details["security"] == (
+        "customer_reported_compromise"
+    )
+
+
+def test_multiple_issue_details():
+    case = make_case(
+        "My iPhone battery is draining quickly and it is not charging"
+    )
+
+    result = analyze_case(case)
+
+    assert result.entities.issue_details["symptom"] == (
+        "battery_or_charging_issue"
+    )
+    assert result.entities.issue_details["battery"] == (
+        "customer_reported"
+    )
+    assert result.entities.issue_details["charging"] == (
+        "customer_reported"
+    )
+
+
+def test_display_issue_variation():
+    case = make_case("The display is black on my iPhone")
+
+    result = analyze_case(case)
+
+    assert result.entities.issue_details["symptom"] == (
+        "display_issue"
+    )
+
+
+def test_wifi_connectivity_issue():
+    case = make_case("My iPhone Wi-Fi is not working")
+
+    result = analyze_case(case)
+
+    assert result.entities.issue_details["symptom"] == (
+        "connectivity_issue"
+    )
