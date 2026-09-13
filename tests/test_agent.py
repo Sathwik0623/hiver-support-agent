@@ -122,3 +122,36 @@ def test_run_agent_does_not_auto_handle_weak_evidence():
         AgentAction.CLARIFY,
     }
     assert result.decision.requires_human is True
+
+
+def test_run_agent_handles_empty_message():
+    result = run_agent("")
+
+    assert result.decision.action == AgentAction.CLARIFY
+    assert result.draft_response is not None
+
+
+def test_run_agent_handles_whitespace_only_message():
+    result = run_agent("   ")
+
+    assert result.decision.action == AgentAction.CLARIFY
+    assert result.draft_response is not None
+
+
+def test_run_agent_handles_empty_message_list():
+    result = run_agent([])
+
+    assert result.decision.action == AgentAction.CLARIFY
+    assert result.draft_response is not None
+
+
+def test_run_agent_filters_empty_messages():
+    result = run_agent(
+        [
+            "",
+            "   ",
+            "My iPhone keeps freezing.",
+        ]
+    )
+
+    assert result.analysis.intent == Intent.DEVICE_PERFORMANCE
