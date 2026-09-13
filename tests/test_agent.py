@@ -207,4 +207,5 @@ def test_run_agent_escalation_response_has_correct_spacing():
 
     assert result.draft_response is not None
     assert "currentiOS version" not in result.draft_response
-    assert "iOS version" in result.draft_response
+    assert "current  iOS version" not in result.draft_response
+    assert "current iOS version" in result.draft_response

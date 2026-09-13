@@ -370,7 +370,7 @@ def build_draft_response(
             return (
                 "Thanks for reaching out. We can help investigate the "
                 "performance issue after the iOS update. Could you please "
-                "share your iPhone model, current  iOS version, whether the "
+                "share your iPhone model, current iOS version, whether the "
                 "freezing happens in all apps or only one app, when the issue "
                 "started, and whether you have already restarted the iPhone? "
                 "Since we do not have a verified historical fix for this "
