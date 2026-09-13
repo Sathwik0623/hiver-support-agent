@@ -58,3 +58,26 @@ def test_run_agent_handles_failed_multi_message_troubleshooting():
     )
     assert result.decision.action == AgentAction.ESCALATE
     assert result.decision.requires_human is True
+
+
+def test_run_agent_handles_resolved_conversation():
+    result = run_agent(
+        [
+            "My iPhone was freezing.",
+            "I restarted it and the issue is now resolved.",
+        ]
+    )
+
+    assert result.analysis.conversation_state == ConversationState.RESOLVED
+    assert result.decision.action == AgentAction.AUTO_HANDLE
+    assert result.decision.requires_human is False
+
+
+def test_run_agent_escalates_high_risk_case():
+    result = run_agent(
+        "Someone accessed my Apple Account without permission."
+    )
+
+    assert result.analysis.risk_flags
+    assert result.decision.action == AgentAction.ESCALATE
+    assert result.decision.requires_human is True

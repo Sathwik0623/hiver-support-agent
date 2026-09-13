@@ -1359,27 +1359,17 @@ def _classify_state(text: str) -> ConversationState:
     Determine the current conversation state.
 
     Priority:
-        FAILED_TROUBLESHOOTING
         RESOLVED
+        FAILED_TROUBLESHOOTING
         INFORMATION_REQUEST
         TROUBLESHOOTING
 
-    Failed troubleshooting wins because it represents a stronger
-    state transition than a generic question.
+    An explicit resolution statement takes precedence over an earlier
+    troubleshooting attempt because it represents the latest known state.
     """
 
     # ---------------------------------------------------------
-    # 1. Failed troubleshooting
-    # ---------------------------------------------------------
-
-    if _contains_any(
-        text,
-        FAILED_TROUBLESHOOTING_TERMS,
-    ):
-        return ConversationState.FAILED_TROUBLESHOOTING
-
-    # ---------------------------------------------------------
-    # 2. Resolved
+    # 1. Resolved
     # ---------------------------------------------------------
 
     if _contains_any(
@@ -1387,6 +1377,16 @@ def _classify_state(text: str) -> ConversationState:
         RESOLVED_TERMS,
     ):
         return ConversationState.RESOLVED
+
+    # ---------------------------------------------------------
+    # 2. Failed troubleshooting
+    # ---------------------------------------------------------
+
+    if _contains_any(
+        text,
+        FAILED_TROUBLESHOOTING_TERMS,
+    ):
+        return ConversationState.FAILED_TROUBLESHOOTING
 
     # ---------------------------------------------------------
     # 3. Explicit information/status request
