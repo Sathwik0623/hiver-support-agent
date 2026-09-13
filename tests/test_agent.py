@@ -178,3 +178,26 @@ def test_run_agent_handles_list_with_only_empty_messages():
 
     assert result.decision.action == AgentAction.CLARIFY
     assert result.draft_response is not None
+
+
+def test_run_agent_handles_very_long_message():
+    long_message = (
+        "My iPhone keeps freezing after the latest iOS update. "
+        * 500
+    )
+
+    result = run_agent(long_message)
+
+    assert result.analysis.intent == Intent.DEVICE_PERFORMANCE
+    assert result.decision.action in {
+        AgentAction.AUTO_HANDLE,
+        AgentAction.ESCALATE,
+        AgentAction.CLARIFY,
+    }
+
+
+def test_run_agent_rejects_unsupported_input_type():
+    import pytest
+
+    with pytest.raises((TypeError, ValueError)):
+        run_agent(12345)
