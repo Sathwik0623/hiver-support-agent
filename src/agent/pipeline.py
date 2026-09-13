@@ -66,8 +66,15 @@ def is_reusable_resolution(record: dict) -> bool:
         "contact our",
         "contact support",
         "send us a dm",
+        
+        "join us in a dm",
+        "join us in dm",
+        "please join us in a dm",
         "in dm",
         "reach out to",
+        "go to dm",
+        "let's go to dm",
+        "lets go to dm",
     ]
 
     if any(phrase in response for phrase in routing_only):
@@ -246,6 +253,39 @@ def build_draft_response(
     This intentionally avoids pretending that an unvalidated historical
     response is safe to send.
     """
+
+
+    if decision_action == "AUTO_HANDLE":
+
+            
+            usable_evidence = [
+                item
+                for item in evidence
+                if item.apple_response.strip()
+                and item.resolution_signal == "RESOLVED"
+                and item.similarity >= 0.20
+            ]
+
+            if not usable_evidence:
+                return (
+                    "Thanks for contacting Apple Support. "
+                    "Your issue appears to be resolved, or no further "
+                    "verified troubleshooting is required."
+                )
+
+            best_evidence = max(
+                usable_evidence,
+                key=lambda item: item.similarity,
+            )
+
+            return (
+                "Thanks for contacting Apple Support. "
+                "Based on a similar previously resolved case, "
+                "the following guidance may help:\n\n"
+                f"{best_evidence.apple_response.strip()}\n\n"
+                "If the issue continues, please let us know so a support "
+                "specialist can review the case."
+            )
     if decision_action == "CLARIFY":
         return (
             "Thanks for contacting Apple Support. To help investigate this, "
