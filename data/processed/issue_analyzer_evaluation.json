@@ -1,0 +1,370 @@
+{
+  "evaluation": {
+    "golden_set_path": "data\\golden\\apple_support_golden_set.csv",
+    "cases_path": "data\\processed\\apple_support_cases.jsonl",
+    "records_evaluated": 200,
+    "misclassified_records": 158
+  },
+  "intent": {
+    "accuracy": 0.38,
+    "macro_precision": 0.38094585840715867,
+    "macro_recall": 0.3478555091398051,
+    "macro_f1": 0.32905084847148347,
+    "weighted_f1": 0.3751830628982088,
+    "per_class": {
+      "SOFTWARE_UPDATE": {
+        "precision": 0.2777777777777778,
+        "recall": 0.35714285714285715,
+        "f1-score": 0.3125,
+        "support": 14.0
+      },
+      "DEVICE_PERFORMANCE": {
+        "precision": 0.21568627450980393,
+        "recall": 0.6470588235294118,
+        "f1-score": 0.3235294117647059,
+        "support": 17.0
+      },
+      "APP_SERVICE": {
+        "precision": 0.5,
+        "recall": 0.23809523809523808,
+        "f1-score": 0.3225806451612903,
+        "support": 21.0
+      },
+      "DEVICE_HARDWARE": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 5.0
+      },
+      "CONNECTIVITY": {
+        "precision": 0.631578947368421,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.6486486486486487,
+        "support": 18.0
+      },
+      "ACCOUNT_ICLOUD": {
+        "precision": 0.6,
+        "recall": 0.5172413793103449,
+        "f1-score": 0.5555555555555556,
+        "support": 29.0
+      },
+      "PURCHASE_BILLING": {
+        "precision": 0.7272727272727273,
+        "recall": 0.7272727272727273,
+        "f1-score": 0.7272727272727273,
+        "support": 22.0
+      },
+      "INPUT_DISPLAY": {
+        "precision": 0.6,
+        "recall": 0.08823529411764706,
+        "f1-score": 0.15384615384615385,
+        "support": 34.0
+      },
+      "OTHER_UNCLEAR": {
+        "precision": 0.2571428571428571,
+        "recall": 0.23684210526315788,
+        "f1-score": 0.2465753424657534,
+        "support": 38.0
+      },
+      "BACKUP_RESTORE": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 2.0
+      },
+      "accuracy": 0.38,
+      "macro avg": {
+        "precision": 0.38094585840715867,
+        "recall": 0.3478555091398051,
+        "f1-score": 0.32905084847148347,
+        "support": 200.0
+      },
+      "weighted avg": {
+        "precision": 0.4649770258980785,
+        "recall": 0.38,
+        "f1-score": 0.3751830628982088,
+        "support": 200.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        5,
+        5,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        2
+      ],
+      [
+        0,
+        11,
+        0,
+        2,
+        1,
+        0,
+        0,
+        0,
+        2,
+        1
+      ],
+      [
+        1,
+        7,
+        5,
+        2,
+        1,
+        0,
+        1,
+        0,
+        4,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        4,
+        0
+      ],
+      [
+        0,
+        2,
+        0,
+        1,
+        12,
+        0,
+        0,
+        0,
+        3,
+        0
+      ],
+      [
+        3,
+        2,
+        2,
+        0,
+        1,
+        15,
+        0,
+        1,
+        4,
+        1
+      ],
+      [
+        0,
+        1,
+        0,
+        1,
+        1,
+        3,
+        16,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        11,
+        2,
+        0,
+        0,
+        1,
+        1,
+        3,
+        9,
+        3
+      ],
+      [
+        5,
+        12,
+        0,
+        1,
+        2,
+        4,
+        4,
+        0,
+        9,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0
+      ]
+    ],
+    "labels": [
+      "SOFTWARE_UPDATE",
+      "DEVICE_PERFORMANCE",
+      "APP_SERVICE",
+      "DEVICE_HARDWARE",
+      "CONNECTIVITY",
+      "ACCOUNT_ICLOUD",
+      "PURCHASE_BILLING",
+      "INPUT_DISPLAY",
+      "OTHER_UNCLEAR",
+      "BACKUP_RESTORE"
+    ]
+  },
+  "conversation_state": {
+    "accuracy": 0.495,
+    "macro_precision": 0.3241421568627451,
+    "macro_recall": 0.25997616086235487,
+    "macro_f1": 0.22999999999999998,
+    "weighted_f1": 0.4442666666666667,
+    "per_class": {
+      "TROUBLESHOOTING": {
+        "precision": 0.5833333333333334,
+        "recall": 0.7777777777777778,
+        "f1-score": 0.6666666666666666,
+        "support": 117.0
+      },
+      "FAILED_TROUBLESHOOTING": {
+        "precision": 0.625,
+        "recall": 0.07462686567164178,
+        "f1-score": 0.13333333333333333,
+        "support": 67.0
+      },
+      "INFORMATION_REQUEST": {
+        "precision": 0.08823529411764706,
+        "recall": 0.1875,
+        "f1-score": 0.12,
+        "support": 16.0
+      },
+      "RESOLVED": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 0.0
+      },
+      "accuracy": 0.495,
+      "macro avg": {
+        "precision": 0.3241421568627451,
+        "recall": 0.25997616086235487,
+        "f1-score": 0.22999999999999998,
+        "support": 200.0
+      },
+      "weighted avg": {
+        "precision": 0.5576838235294117,
+        "recall": 0.495,
+        "f1-score": 0.4442666666666667,
+        "support": 200.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        91,
+        3,
+        22,
+        1
+      ],
+      [
+        52,
+        5,
+        9,
+        1
+      ],
+      [
+        13,
+        0,
+        3,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ],
+    "labels": [
+      "TROUBLESHOOTING",
+      "FAILED_TROUBLESHOOTING",
+      "INFORMATION_REQUEST",
+      "RESOLVED"
+    ]
+  },
+  "risk_flags": {
+    "micro_precision": 0.0,
+    "micro_recall": 0.0,
+    "micro_f1": 0.0,
+    "per_flag": {
+      "account_compromise": {
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "data_loss": {
+        "true_positive": 0,
+        "false_positive": 1,
+        "false_negative": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "fraud": {
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "phishing": {
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "privacy_sensitive": {
+        "true_positive": 0,
+        "false_positive": 2,
+        "false_negative": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safety_issue": {
+        "true_positive": 0,
+        "false_positive": 2,
+        "false_negative": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safety_relevant": {
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    }
+  },
+  "confidence": {
+    "mean": 0.7898000000000021,
+    "min": 0.4,
+    "max": 0.94
+  }
+}
