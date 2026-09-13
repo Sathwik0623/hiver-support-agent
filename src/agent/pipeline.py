@@ -387,59 +387,59 @@ def run_agent(
     customer_message: str | list[str],
     case_id: str = "DEMO_CASE_001",
 ) -> AgentResponse:
+    if isinstance(customer_message, str):
+        if not customer_message.strip():
+            customer_message = "Hello, I need help."
+    elif isinstance(customer_message, list):
+        customer_message = [
+            message
+            for message in customer_message
+            if isinstance(message, str) and message.strip()
+        ]
 
-        if isinstance(customer_message, str):
-            if not customer_message.strip():
-                customer_message = "Hello, I need help."
-        elif isinstance(customer_message, list):
-            customer_message = [
-                message for message in customer_message
-                if isinstance(message, str) and message.strip()
-            ]
+        if not customer_message:
+            customer_message = ["Hello, I need help."]
 
-            if not customer_message:
-                customer_message = ["Hello, I need help."]
-    
-        if isinstance(customer_message, str):
-            customer_messages = [customer_message]
-        else:
-            customer_messages = customer_message
+    if isinstance(customer_message, str):
+        customer_messages = [customer_message]
+    else:
+        customer_messages = customer_message
 
-        case = SupportCase(
-            case_id=case_id,
-            customer_id="DEMO_CUSTOMER",
-            brand="AppleSupport",
-            messages=[
-                Message(
-                    message_id=f"{case_id}_MESSAGE_{index:03d}",
-                    sender="customer",
-                    text=message,
-                )
-                for index, message in enumerate(customer_messages, start=1)
-            ],
-        )
+    case = SupportCase(
+        case_id=case_id,
+        customer_id="DEMO_CUSTOMER",
+        brand="AppleSupport",
+        messages=[
+            Message(
+                message_id=f"{case_id}_MESSAGE_{index:03d}",
+                sender="customer",
+                text=message,
+            )
+            for index, message in enumerate(customer_messages, start=1)
+        ],
+    )
 
-        analysis = analyze_case(case)
+    analysis = analyze_case(case)
 
-        combined_customer_text = " ".join(customer_messages)
+    combined_customer_text = " ".join(customer_messages)
 
-        retrieved = retrieve_evidence(combined_customer_text)
-        assessments = assess_evidence(retrieved)
-        decision = decide_action(analysis, assessments)
+    retrieved = retrieve_evidence(combined_customer_text)
+    assessments = assess_evidence(retrieved)
+    decision = decide_action(analysis, assessments)
 
-        draft = build_draft_response(
-            decision.action.value,
-            analysis,
-            retrieved,
-        )
+    draft = build_draft_response(
+        decision.action.value,
+        analysis,
+        retrieved,
+    )
 
-        return AgentResponse(
-            case_id=case_id,
-            analysis=analysis,
-            evidence=assessments,
-            decision=decision,
-            draft_response=draft,
-        )
+    return AgentResponse(
+        case_id=case_id,
+        analysis=analysis,
+        evidence=assessments,
+        decision=decision,
+        draft_response=draft,
+    )
 
 
 def main() -> None:
