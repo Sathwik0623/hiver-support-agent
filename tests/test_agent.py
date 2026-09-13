@@ -81,3 +81,44 @@ def test_run_agent_escalates_high_risk_case():
     assert result.analysis.risk_flags
     assert result.decision.action == AgentAction.ESCALATE
     assert result.decision.requires_human is True
+
+
+def test_run_agent_generates_response_for_escalated_case():
+    result = run_agent(
+        "My iPhone keeps freezing after the latest iOS update."
+    )
+
+    assert result.draft_response is not None
+    assert "human assistance" in result.draft_response.lower()
+    assert "iPhone model" in result.draft_response
+    assert "iOS version" in result.draft_response
+
+
+def test_run_agent_generates_response_for_resolved_case():
+    result = run_agent(
+        [
+            "My iPhone was freezing.",
+            "I restarted it and the issue is now resolved.",
+        ]
+    )
+
+    assert result.draft_response is not None
+    assert "resolved" in result.draft_response.lower()
+    assert "troubleshooting" in result.draft_response.lower()
+
+
+
+def test_run_agent_does_not_auto_handle_weak_evidence():
+    result = run_agent(
+        [
+            "My iPhone keeps freezing.",
+            "I restarted it but it still freezes.",
+        ]
+    )
+
+    assert result.decision.action != AgentAction.AUTO_HANDLE
+    assert result.decision.action in {
+        AgentAction.ESCALATE,
+        AgentAction.CLARIFY,
+    }
+    assert result.decision.requires_human is True
