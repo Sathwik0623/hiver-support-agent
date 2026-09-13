@@ -14,6 +14,7 @@ import argparse
 import json
 import re
 from pathlib import Path
+import sys
 from typing import Any
 
 from .issue_analyzer import analyze_case
@@ -369,7 +370,7 @@ def build_draft_response(
             return (
                 "Thanks for reaching out. We can help investigate the "
                 "performance issue after the iOS update. Could you please "
-                "share your iPhone model, current iOS version, whether the "
+                "share your iPhone model, current  iOS version, whether the "
                 "freezing happens in all apps or only one app, when the issue "
                 "started, and whether you have already restarted the iPhone? "
                 "Since we do not have a verified historical fix for this "
@@ -518,4 +519,20 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except (TypeError, ValueError) as exc:
+        print(
+            f"Input error: {exc}. "
+            "Please provide a valid customer message.",
+            file=sys.stderr,
+        )
+        raise SystemExit(2)
+    except Exception:
+        logger.exception("Unexpected failure while running support-agent CLI")
+        print(
+            "The support agent encountered an unexpected error. "
+            "Please try again or contact support.",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
