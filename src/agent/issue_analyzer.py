@@ -859,7 +859,24 @@ def _extract_entities(text: str) -> dict:
         issue_details["security"] = "customer_reported_compromise"
 
     # Battery and charging issues
-    if _contains_any(text, BATTERY_TERMS):
+    positive_battery_terms = (
+        "good battery life",
+        "great battery life",
+        "excellent battery life",
+        "long battery life",
+        "battery is good",
+        "battery works well",
+    )
+
+    has_positive_battery_statement = _contains_any(
+        text,
+        positive_battery_terms,
+    )
+
+    if (
+        _contains_any(text, BATTERY_TERMS)
+        and not has_positive_battery_statement
+    ):
         issue_details["symptom"] = "battery_or_charging_issue"
         issue_details["battery"] = "customer_reported"
 
@@ -1277,12 +1294,29 @@ def _classify_intent(text: str) -> Tuple[Intent, float]:
         return Intent.DEVICE_HARDWARE, 0.92
 
     # 4. Battery and charging
-    # Must be checked before billing, connectivity, and performance.
-    if (
+    
+    positive_battery_terms = (
+        "good battery life",
+        "great battery life",
+        "excellent battery life",
+        "long battery life",
+        "battery is good",
+        "battery works well",
+    )
+
+    has_battery_issue = (
         _contains_any(text, BATTERY_TERMS)
         or _contains_any(text, CHARGING_TERMS)
-    ):
+    )
+
+    has_positive_battery_statement = _contains_any(
+        text,
+        positive_battery_terms,
+    )
+
+    if has_battery_issue and not has_positive_battery_statement:
         return Intent.DEVICE_HARDWARE, 0.92
+    
 
     # 5. Physical hardware
     if _contains_any(text, HARDWARE_TERMS):
