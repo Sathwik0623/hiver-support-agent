@@ -7,6 +7,9 @@ SupportCase -> IssueAnalysis -> EvidenceAssessment -> AgentDecision
 
 from __future__ import annotations
 
+
+
+import logging
 import argparse
 import json
 import re
@@ -28,7 +31,7 @@ from .schemas import (
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE_PATH = PROJECT_ROOT / "data" / "processed" / "historical_evidence.jsonl"
-
+logger = logging.getLogger(__name__)
 
 def is_reusable_resolution(record: dict) -> bool:
     response = (record.get("apple_response") or "").lower()
@@ -387,9 +390,16 @@ def run_agent(
     customer_message: str | list[str],
     case_id: str = "DEMO_CASE_001",
 ) -> AgentResponse:
+    logger.info(
+        "Starting support-agent pipeline: case_id=%s",
+        case_id,
+    )
+
+    # Normalize empty or whitespace-only input.
     if isinstance(customer_message, str):
         if not customer_message.strip():
             customer_message = "Hello, I need help."
+
     elif isinstance(customer_message, list):
         customer_message = [
             message
@@ -400,11 +410,24 @@ def run_agent(
         if not customer_message:
             customer_message = ["Hello, I need help."]
 
+    else:
+        raise TypeError(
+            "customer_message must be a string or a list of strings"
+        )
+
+    # Normalize a single message into a list.
     if isinstance(customer_message, str):
         customer_messages = [customer_message]
     else:
         customer_messages = customer_message
 
+    logger.debug(
+        "Prepared customer messages: case_id=%s message_count=%d",
+        case_id,
+        len(customer_messages),
+    )
+
+    # Build the support case.
     case = SupportCase(
         case_id=case_id,
         customer_id="DEMO_CUSTOMER",
@@ -415,22 +438,55 @@ def run_agent(
                 sender="customer",
                 text=message,
             )
-            for index, message in enumerate(customer_messages, start=1)
+            for index, message in enumerate(
+                customer_messages,
+                start=1,
+            )
         ],
     )
 
+    # Analyze the customer conversation.
     analysis = analyze_case(case)
 
+    logger.info(
+        "Case analyzed: case_id=%s intent=%s state=%s",
+        case_id,
+        analysis.intent.value,
+        analysis.conversation_state.value,
+    )
+
+    # Retrieve and assess historical evidence.
     combined_customer_text = " ".join(customer_messages)
 
     retrieved = retrieve_evidence(combined_customer_text)
+
+    logger.debug(
+        "Evidence retrieved: case_id=%s evidence_count=%d",
+        case_id,
+        len(retrieved),
+    )
+
     assessments = assess_evidence(retrieved)
+
+    # Decide the appropriate action.
     decision = decide_action(analysis, assessments)
 
+    logger.info(
+        "Decision created: case_id=%s action=%s",
+        case_id,
+        decision.action.value,
+    )
+
+    # Generate the customer-facing draft response.
     draft = build_draft_response(
         decision.action.value,
         analysis,
         retrieved,
+    )
+
+    logger.debug(
+        "Draft response generated: case_id=%s",
+        case_id,
     )
 
     return AgentResponse(
