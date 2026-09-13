@@ -66,3 +66,29 @@ def test_cli_preserves_response_spacing():
     assert "currentiOS version" not in draft_response
     assert "current  iOS version" not in draft_response
     assert "current iOS version" in draft_response
+
+def test_cli_has_no_missing_spaces():
+    result = run_cli("My iPhone keeps freezing.")
+
+    assert result.returncode == 0
+
+    payload = json.loads(result.stdout)
+    response = payload["draft_response"]
+
+    assert "Could youplease" not in response
+    assert "exactissue" not in response
+    assert "beenflagged" not in response
+    assert "currentiOS" not in response
+    assert "current  iOS" not in response
+
+def test_cli_security_response_has_correct_spacing():
+    result = run_cli("My account may have been compromised.")
+
+    assert result.returncode == 0
+
+    payload = json.loads(result.stdout)
+    response = payload["draft_response"]
+
+    assert "Could youplease" not in response
+    assert "beenflagged" not in response
+    assert "human assistance" in response
