@@ -42,3 +42,19 @@ def test_run_agent_handles_unclear_message():
     result = run_agent("Hello, I need help.")
 
     assert result.decision.action == AgentAction.CLARIFY
+
+def test_run_agent_handles_failed_multi_message_troubleshooting():
+    result = run_agent(
+        [
+            "My iPhone keeps freezing.",
+            "I restarted it but it still freezes.",
+        ]
+    )
+
+    assert result.analysis.intent == Intent.DEVICE_PERFORMANCE
+    assert (
+        result.analysis.conversation_state
+        == ConversationState.FAILED_TROUBLESHOOTING
+    )
+    assert result.decision.action == AgentAction.ESCALATE
+    assert result.decision.requires_human is True

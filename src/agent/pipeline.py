@@ -344,24 +344,33 @@ def build_draft_response(
 
 
 def run_agent(
-    customer_message: str,
+    customer_message: str | list[str],
     case_id: str = "DEMO_CASE_001",
 ) -> AgentResponse:
+    if isinstance(customer_message, str):
+        customer_messages = [customer_message]
+    else:
+        customer_messages = customer_message
+
     case = SupportCase(
         case_id=case_id,
         customer_id="DEMO_CUSTOMER",
         brand="AppleSupport",
         messages=[
             Message(
-                message_id=f"{case_id}_MESSAGE_001",
+                message_id=f"{case_id}_MESSAGE_{index:03d}",
                 sender="customer",
-                text=customer_message,
+                text=message,
             )
+            for index, message in enumerate(customer_messages, start=1)
         ],
     )
 
     analysis = analyze_case(case)
-    retrieved = retrieve_evidence(customer_message)
+
+    combined_customer_text = " ".join(customer_messages)
+
+    retrieved = retrieve_evidence(combined_customer_text)
     assessments = assess_evidence(retrieved)
     decision = decide_action(analysis, assessments)
 
