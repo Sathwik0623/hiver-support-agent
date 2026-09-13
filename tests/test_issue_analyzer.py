@@ -64,6 +64,16 @@ def test_account_password_issue():
         "forgotten_password"
     )
 
+def test_account_compromised_issue():
+    case = make_case("Someone hacked my Apple Account")
+
+    result = analyze_case(case)
+
+    assert result.intent == Intent.ACCOUNT_ICLOUD
+    assert result.entities.issue_details["security"] == (
+        "customer_reported_compromise"
+    )
+
 
 def test_unknown_issue():
     case = make_case("I need help with something")
@@ -72,3 +82,13 @@ def test_unknown_issue():
 
     assert result.intent == Intent.OTHER_UNCLEAR
     assert 0.0 <= result.intent_confidence <= 1.0
+
+
+def test_data_loss_issue():
+    case = make_case("My photos disappeared from my iPhone")
+
+    result = analyze_case(case)
+
+    assert result.entities.issue_details["data_loss"] == (
+        "customer_reported"
+    )
