@@ -201,3 +201,10 @@ def test_run_agent_rejects_unsupported_input_type():
 
     with pytest.raises((TypeError, ValueError)):
         run_agent(12345)
+
+def test_run_agent_escalation_response_has_correct_spacing():
+    result = run_agent("My iPhone keeps freezing.")
+
+    assert result.draft_response is not None
+    assert "currentiOS version" not in result.draft_response
+    assert "iOS version" in result.draft_response
