@@ -640,12 +640,13 @@ def _extract_entities(text: str) -> dict:
         "issue_details": {},
     }
 
+
     # ---------------------------------------------------------
     # iPhone model
     # ---------------------------------------------------------
 
     iphone_match = re.search(
-        r"\biphone\s+(\d+)(?:\s+(pro|max|plus|mini))?\b",
+        r"\biphone(?:\s+(\d+)(?:\s+(pro|max|plus|mini))?)?\b",
         text,
         re.I,
     )
@@ -654,11 +655,14 @@ def _extract_entities(text: str) -> dict:
         model_number = iphone_match.group(1)
         variant = iphone_match.group(2)
 
-        if variant:
-            variant = variant.capitalize()
-            entities["device"] = f"iPhone {model_number} {variant}"
+        if model_number:
+            if variant:
+                variant = variant.capitalize()
+                entities["device"] = f"iPhone {model_number} {variant}"
+            else:
+                entities["device"] = f"iPhone {model_number}"
         else:
-            entities["device"] = f"iPhone {model_number}"
+            entities["device"] = "iPhone"
 
     # ---------------------------------------------------------
     # iPad model
@@ -704,6 +708,12 @@ def _extract_entities(text: str) -> dict:
 
     if ios_match:
         entities["os_version"] = f"iOS {ios_match.group(1)}"
+    elif re.search(
+        r"\b(?:latest|recent|new)\s+ios(?:\s+update|\s+version)?\b",
+        text,
+        re.I,
+    ):
+        entities["os_version"] = "latest iOS"
 
     # ---------------------------------------------------------
     # macOS version
@@ -792,8 +802,35 @@ def _extract_entities(text: str) -> dict:
 
     issue_details: Dict[str, str] = {}
 
+
+
+
+
+    # Apple Account/iCloud issue details
+    if (
+    "password" in text
+    and any(word in text for word in ("forgot", "forgotten", "lost"))
+):
+        issue_details["account_issue"] = "forgotten_password"
+
     if _contains_any(text, PERFORMANCE_TERMS):
         issue_details["symptom"] = "performance_issue"
+
+    # Display/black-screen symptom extraction
+    if any(
+        phrase in text
+        for phrase in (
+            "black screen",
+            "screen is black",
+            "screen completely black",
+            "screen went completely black",
+            "display is black",
+            "screen went black",
+            "screen turns black",
+            "screen turned black",
+        )
+    ):
+        issue_details["symptom"] = "display_issue"
 
     if _contains_any(text, CONNECTIVITY_TERMS):
         issue_details["symptom"] = "connectivity_issue"
@@ -931,6 +968,13 @@ def _extract_observed_symptoms(text: str) -> List[str]:
             "screen",
             "characters",
             "rendering",
+            "black screen",
+            "screen is black",
+            "screen completely black",
+            "display is black",
+            "screen went black",
+            "screen turns black",
+            "screen turned black",
         ),
         "account access issue": (
             "can't sign in",
@@ -1208,6 +1252,22 @@ def _classify_intent(text: str) -> Tuple[Intent, float]:
     if _has_account_access_issue(text):
         return Intent.ACCOUNT_ICLOUD, 0.90
 
+    # 4. Explicit black-screen/display failure
+    if any(
+        phrase in text
+        for phrase in (
+            "black screen",
+            "screen is black",
+            "screen completely black",
+            "screen went completely black",
+            "display is black",
+            "screen went black",
+            "screen turns black",
+            "screen turned black",
+        )
+    ):
+        return Intent.DEVICE_HARDWARE, 0.92
+
     # 4. Battery and charging
     # Must be checked before billing, connectivity, and performance.
     if (
@@ -1334,6 +1394,10 @@ def analyze_case(case: SupportCase) -> IssueAnalysis:
         )
     )
 
+
+
+
+        
     # ---------------------------------------------------------
     # Empty case
     # ---------------------------------------------------------

@@ -1,3 +1,6 @@
+# LEGACY SCRIPT
+# Use src.data.build_index instead.
+
 import csv, sqlite3, os, sys, time
 
 CSV_PATH = os.environ.get('TWCS_CSV', '/mnt/data/twcs.csv')

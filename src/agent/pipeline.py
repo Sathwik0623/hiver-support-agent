@@ -19,6 +19,7 @@ from .schemas import (
     AgentResponse,
     EvidenceAssessment,
     EvidenceDecision,
+    Intent,
     Message,
     RetrievedEvidence,
     SupportCase,
@@ -28,6 +29,51 @@ from .schemas import (
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE_PATH = PROJECT_ROOT / "data" / "processed" / "historical_evidence.jsonl"
 
+
+def is_reusable_resolution(record: dict) -> bool:
+    response = (record.get("apple_response") or "").lower()
+    follow_up = (record.get("follow_up") or "").lower()
+
+    acknowledgement_only = [
+        "thank you",
+        "thanks",
+        "awesome",
+        "you're welcome",
+        "will do",
+    ]
+
+    if any(phrase in follow_up for phrase in acknowledgement_only):
+        concrete_guidance = [
+            "check",
+            "go to",
+            "open",
+            "tap",
+            "select",
+            "contact",
+            "update",
+            "restart",
+            "reset",
+            "install",
+            "enable",
+            "disable",
+            "article",
+        ]
+
+        if not any(phrase in response for phrase in concrete_guidance):
+            return False
+
+    routing_only = [
+        "contact our",
+        "contact support",
+        "send us a dm",
+        "in dm",
+        "reach out to",
+    ]
+
+    if any(phrase in response for phrase in routing_only):
+        return False
+
+    return True
 
 def _tokens(text: str) -> set[str]:
     return set(
@@ -208,35 +254,93 @@ def build_draft_response(
         )
 
     if decision_action == "ESCALATE":
+        intent = analysis.intent
+        issue_details = analysis.entities.issue_details
+
+        symptom = issue_details.get("symptom")
+
+        if intent == Intent.DEVICE_HARDWARE:
+            if symptom == "battery_or_charging_issue":
+                return (
+                    "Thanks for reaching out. We can help investigate the "
+                    "battery drain issue. Could you please share your iPhone "
+                    "model, current iOS version, battery health percentage, "
+                    "when the battery drain started, and whether the device "
+                    "becomes unusually warm? Please also let us know whether "
+                    "the drain happens while using a specific app or even "
+                    "when the phone is idle. Since we do not have a verified "
+                    "historical fix for this exact issue, your case has been "
+                    "flagged for human assistance."
+                )
+
+            if symptom == "display_issue":
+                return (
+                    "Thanks for reaching out. We can help investigate the "
+                    "display issue. Could you please share your iPhone model, "
+                    "current iOS version, when the screen went black, whether  "
+                    "the device still makes sounds or vibrates, and whether "
+                    "the screen responds to touch? Please also let us know "
+                    "whether the issue started after a drop, liquid exposure, "
+                    "or software update. Since we do not have a verified "
+                    "historical fix for this exact issue, your case has been "
+                    "flagged for human assistance."
+                )
+
+            
+
+        if intent == "ACCOUNT_ICLOUD":
+            account_issue = issue_details.get("account_issue")
+
+            if account_issue == "forgotten_password":
+                return (
+                    "Thanks for reaching out. We can help with your "
+                    "forgotten Apple Account password. Please use Apple's "
+                    "official account-recovery process or contact a support "
+                    "specialist for further assistance. For security, do not "
+                    "share your password, verification codes, or other "
+                    "sensitive account information. Your case has been "
+                    "flagged for human assistance."
+                )
+
+            if account_issue == "region_change":
+                return (
+                    "Thanks for reaching out. We can help investigate the "
+                    "Apple Account region-change issue. Could you please "
+                    "share the exact error message and confirm whether you "
+                    "have any remaining account balance, active subscriptions, "
+                    "pending refunds, or Family Sharing membership? For "
+                    "security, do not share your password or verification "
+                    "codes. Your case has been flagged for human assistance."
+                )
+
+            return (
+                "Thanks for reaching out. We can help investigate your "
+                "Apple Account issue. Could you please describe the exact "
+                "problem and share any error message? For security, do not "
+                "share your password, verification codes, or other sensitive "
+                "account information. Your case has been flagged for human "
+                "assistance."
+            )
+
+        if intent == "DEVICE_PERFORMANCE":
+            return (
+                "Thanks for reaching out. We can help investigate the "
+                "performance issue after the iOS update. Could you please "
+                "share your iPhone model, current iOS version, whether the "
+                "freezing happens in all apps or only one app, when the issue "
+                "started, and whether you have already restarted the iPhone? "
+                "Since we do not have a verified historical fix for this "
+                "exact issue, your case has been flagged for human assistance."
+            )
+
         return (
-            "Thanks for reaching out. This issue needs further review by "
-	     "a support specialist. Your case has been flagged for human "
-	     "assistance so that we do not recommend an unsuitable or "
-	     "repeated troubleshooting step."
+            "Thanks for reaching out. This issue needs further review by a "
+            "support specialist. Could you please share the exact device "
+            "model, software version, steps that lead to the issue, and any "
+            "error message you see? Your case has been flagged for human "
+            "assistance so that we do not recommend an unsuitable or "
+            "repeated troubleshooting step."
         )
-
-    selected = [
-        item
-        for item in evidence
-        if item.resolution_signal == "RESOLVED"
-        and item.apple_response.strip()
-    ]
-
-    if not selected:
-        return (
-            "Thanks for contacting Apple Support. We need a little more "
-            "information before recommending a reliable next step."
-        )
-
-    response = selected[0].apple_response.strip()
-
-    return (
-        "Thanks for contacting Apple Support. Based on a similar historical "
-        "case, the following guidance may help:\n\n"
-        f"{response}\n\n"
-        "If this does not resolve the issue, please let us know what happened "
-        "so a support specialist can review the case."
-    )
 
 
 def run_agent(

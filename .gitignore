@@ -35,3 +35,4 @@ data/processed/*retrieval_results*
 data/processed/*comparison*
 data/processed/*error_analysis*
 data/processed/issue_analyzer_errors.jsonl
+.aider*
