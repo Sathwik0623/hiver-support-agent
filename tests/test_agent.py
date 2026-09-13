@@ -155,3 +155,26 @@ def test_run_agent_filters_empty_messages():
     )
 
     assert result.analysis.intent == Intent.DEVICE_PERFORMANCE
+
+
+def test_run_agent_handles_mixed_empty_messages():
+    result = run_agent(
+        [
+            "",
+            "   ",
+            "My iPhone battery is draining very quickly.",
+            "",
+        ]
+    )
+
+    assert result.analysis.intent == Intent.DEVICE_HARDWARE
+    assert result.analysis.entities.issue_details.get(
+        "symptom"
+    ) == "battery_or_charging_issue"
+
+
+def test_run_agent_handles_list_with_only_empty_messages():
+    result = run_agent(["", "   ", "\n"])
+
+    assert result.decision.action == AgentAction.CLARIFY
+    assert result.draft_response is not None
