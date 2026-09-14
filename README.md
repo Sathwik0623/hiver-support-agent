@@ -269,3 +269,12 @@ Possible future improvements include:
 
 ````
 
+## Evaluation
+
+The project includes a representative evaluation script covering security,
+data-loss, device-performance, account-access, and resolved-issue scenarios.
+
+Run the evaluation from the project root:
+
+```powershell
+python scripts\evaluate_agent.py
