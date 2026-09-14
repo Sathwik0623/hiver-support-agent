@@ -80,24 +80,43 @@ Draft response or escalation reason
 
 ```text
 hiver-support-agent/
+|-- app/
+|   `-- demo.py
+|-- baselines/
+|   |-- semantic_baseline.py
+|   |-- tfidf_baseline.py
+|   `-- ...
 |-- data/
-|   `-- historical support data
+|   |-- raw/
+|   |-- interim/
+|   |-- processed/
+|   `-- golden/
+|-- notebooks/
+|   |-- 01_data_exploration.ipynb
+|   |-- 02_retrieval_analysis.ipynb
+|   `-- 03_error_analysis.ipynb
+|-- reports/
+|   `-- evaluation and analysis reports
+|-- scripts/
+|   `-- evaluate_agent.py
 |-- src/
-|   `-- agent/
-|       |-- analyzer.py
-|       |-- pipeline.py
-|       |-- policy.py
-|       |-- retrieval.py
-|       |-- schemas.py
-|       `-- ...
+|   |-- agent/
+|   |-- cache/
+|   |-- classification/
+|   |-- data/
+|   |-- decision/
+|   |-- evaluation/
+|   |-- generation/
+|   |-- retrieval/
+|   `-- taxonomy/
 |-- tests/
-|   `-- test_agent.py
+|   `-- automated test suite
 |-- requirements.txt
-|-- README.md
-`-- pyproject.toml
+`-- README.md
 ```
 
-The exact files may vary as the project evolves.
+The project separates the core agent logic, data processing, retrieval,
+evaluation, experiments, reports, and automated tests.
 
 ## 5. Installation
 
@@ -183,7 +202,7 @@ The test suite covers:
 * Long messages
 * Response-formatting regressions
 
-The current test suite contains 63 passing tests.
+The current test suite contains 78 passing tests.
 
 ## 8. Decision Policy
 
@@ -269,7 +288,7 @@ Possible future improvements include:
 
 ````
 
-## Evaluation
+## 13. Evaluation
 
 The project includes a representative evaluation script covering security,
 data-loss, device-performance, account-access, and resolved-issue scenarios.
@@ -278,3 +297,17 @@ Run the evaluation from the project root:
 
 ```powershell
 python scripts\evaluate_agent.py
+```
+
+### Representative Results
+
+| Scenario | Predicted Action | Human Review |
+|---|---|---|
+| Possible account compromise | `ESCALATE` | Yes |
+| Reported data loss | `ESCALATE` | Yes |
+| iPhone freezing | `ESCALATE` | Yes |
+| Unable to log in | `ESCALATE` | Yes |
+| Issue already resolved | `AUTO_HANDLE` | No |
+
+The evaluation confirms that high-risk and unresolved cases are routed to
+human support, while a clearly resolved issue can be handled automatically.
