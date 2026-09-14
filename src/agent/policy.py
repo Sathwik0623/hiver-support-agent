@@ -99,6 +99,43 @@ def select_strong_evidence(
     ]
 
 
+
+
+def calculate_action_confidence(
+    evidence: List[EvidenceAssessment],
+) -> float:
+    """
+    Calculate action confidence from the strongest selected evidence.
+
+    The confidence is bounded so that automatic handling never appears
+    artificially certain.
+    """
+
+    if not evidence:
+        return 0.0
+
+    strongest_evidence = max(
+        evidence,
+        key=lambda item: (
+            item.problem_relevance
+            + item.resolution_usefulness
+            + item.context_compatibility
+            + item.grounding_value
+        ),
+    )
+
+    average_score = (
+        strongest_evidence.problem_relevance
+        + strongest_evidence.resolution_usefulness
+        + strongest_evidence.context_compatibility
+        + strongest_evidence.grounding_value
+    ) / 4
+
+    return round(
+        min(max(average_score, MIN_ACTION_CONFIDENCE), 0.95),
+        2,
+    )
+
 # ---------------------------------------------------------------------
 # POLICY
 # ---------------------------------------------------------------------
@@ -255,7 +292,9 @@ def decide_action(
             "historical resolution evidence and no high-risk or "
             "failed-troubleshooting conditions."
         ),
-        action_confidence=MIN_ACTION_CONFIDENCE,
+        action_confidence=calculate_action_confidence(
+    strong_evidence
+),
         requires_human=False,
         selected_evidence_ids=selected_ids,
     )
