@@ -91,4 +91,7 @@ def test_cli_security_response_has_correct_spacing():
 
     assert "Could youplease" not in response
     assert "beenflagged" not in response
-    assert "human assistance" in response
+    assert "account compromise" in response.lower()
+    assert "password" in response.lower()
+    assert "verification codes" in response.lower()
+    assert "support specialist" in response.lower()
