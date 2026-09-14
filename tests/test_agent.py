@@ -209,3 +209,23 @@ def test_run_agent_escalation_response_has_correct_spacing():
     assert "currentiOS version" not in result.draft_response
     assert "current  iOS version" not in result.draft_response
     assert "current iOS version" in result.draft_response
+
+def test_account_compromise_response_is_risk_specific():
+    result = run_agent("My account may have been compromised.")
+
+    assert result.decision.action == AgentAction.ESCALATE
+    assert result.decision.requires_human is True
+    assert result.draft_response is not None
+    assert "account compromise" in result.draft_response.lower()
+    assert "password" in result.draft_response.lower()
+    assert "verification codes" in result.draft_response.lower()
+
+def test_data_loss_response_is_risk_specific():
+    result = run_agent("I lost all my data.")
+
+    assert result.analysis.data_loss is True
+    assert "data_loss" in result.analysis.risk_flags
+    assert result.decision.action == AgentAction.ESCALATE
+    assert result.decision.requires_human is True
+    assert result.draft_response is not None
+    assert "data loss" in result.draft_response.lower()

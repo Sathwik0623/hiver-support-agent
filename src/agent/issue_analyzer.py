@@ -490,6 +490,7 @@ RESOLVED_TERMS = (
 DATA_LOSS_TERMS = (
     "data loss",
     "lost my data",
+    "lost all my data",
     "lost data",
     "missing data",
     "photos are missing",
