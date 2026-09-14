@@ -146,3 +146,30 @@ def test_already_tried_evidence_is_not_auto_used():
     )
 
     assert decision.action == AgentAction.ESCALATE
+
+
+def test_auto_handle_confidence_is_derived_from_evidence():
+    evidence = [
+        EvidenceAssessment(
+            evidence_id="strong-1",
+            problem_relevance=0.95,
+            resolution_usefulness=0.90,
+            context_compatibility=0.85,
+            grounding_value=0.90,
+            already_tried=False,
+            decision=EvidenceDecision.USE,
+            reason="Strong compatible historical resolution.",
+        )
+    ]
+
+    analysis = IssueAnalysis(
+        intent=Intent.DEVICE_PERFORMANCE,
+        conversation_state=ConversationState.TROUBLESHOOTING,
+        intent_confidence=0.95,
+    )
+
+    decision = decide_action(analysis, evidence)
+
+    assert decision.action == AgentAction.AUTO_HANDLE
+    assert decision.requires_human is False
+    assert decision.action_confidence == 0.90
