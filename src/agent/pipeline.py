@@ -346,13 +346,16 @@ def build_draft_response(
                 return (
                     "Thanks for reaching out. We can help investigate the "
                     "display issue. Could you please share your iPhone model, "
-                    "current iOS version, when the screen went black, whether  "
+                    "current iOS version, when the screen went black, whether "
                     "the device still makes sounds or vibrates, and whether "
                     "the screen responds to touch? Please also let us know "
                     "whether the issue started after a drop, liquid exposure, "
                     "or software update. Since we do not have a verified "
                     "historical fix for this exact issue, your case has been "
                     "flagged for human assistance."
+
+
+                    
                 )
 
             
