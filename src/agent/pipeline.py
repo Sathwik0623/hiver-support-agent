@@ -297,6 +297,31 @@ def build_draft_response(
             "and the steps that lead to the issue?"
         )
 
+
+
+
+    risk_flags = set(analysis.risk_flags)
+
+    if "account_compromise" in risk_flags:
+        return (
+            "Thanks for reaching out. Because you reported possible account "
+            "compromise, this case requires urgent review by a support specialist. "
+            "Please avoid sharing passwords, verification codes, or other sensitive "
+            "information. If you still have access to the account, secure it using "
+            "the official account recovery or security settings. A specialist will "
+            "help investigate the reported unauthorized access."
+        )
+
+    if "data_loss" in risk_flags:
+        return (
+            "Thanks for reaching out. Because this issue may involve data loss, "
+            "your case requires review by a support specialist. Please avoid "
+            "resetting, restoring, or deleting anything until the situation has "
+            "been assessed. Share the affected device, when the data became "
+            "unavailable, and any recent changes you made."
+        )
+
+
     if decision_action == "ESCALATE":
         intent = analysis.intent
         issue_details = analysis.entities.issue_details
